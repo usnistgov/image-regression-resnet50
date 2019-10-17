@@ -4,10 +4,11 @@ Regression Tesnorflow model ready to run on Enki.
 - ResNet50: [https://arxiv.org/pdf/1512.03385.pdf](https://arxiv.org/pdf/1512.03385.pdf)
 
 
-
 Enki AI Cluster page: 
 - [https://aihpc.ipages.nist.gov/pages/](https://aihpc.ipages.nist.gov/pages/)
 - [https://gitlab.nist.gov/gitlab/aihpc/pages/wikis/home](https://gitlab.nist.gov/gitlab/aihpc/pages/wikis/home)
+
+*This codebase is designed to work with Python3 and Tensorflow 2.x*
 
 
 # Input Data Constraints
