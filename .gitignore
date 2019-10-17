@@ -1,0 +1,59 @@
+# use glob syntax.
+syntax: glob
+
+SegNet/__pycache__
+SegNet/model
+UNet/__pycache__
+UNet/model
+
+.idea
+*.lmdb
+
+
+# Ignore Extensions
+*.lnk
+Thumbs.db
+.DS_Store
+*.db
+*.swp
+*.dot
+*.pyc
+
+*.zip
+*.7z
+*.tar.gz
+*.tar
+*.index
+*.png
+# *.tif
+
+# Microsoft Extensions
+*.exe
+*.xlsx
+*.xls
+*.ppt
+*.pptx
+*.csv
+*.doc
+*.docx
+
+# Multimedia Extensions
+*.mp3
+*.mpeg
+*.avi
+*.mov
+*.wma
+*.wmv
+*.mp4
+*.jpg
+*.svg
+
+
+# LaTeX extensions
+*.aux
+*.log
+*.out
+*.pdf
+*.glo
+*.glsdefs
+*.ist

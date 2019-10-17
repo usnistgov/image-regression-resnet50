@@ -1,0 +1,73 @@
+syntax = "proto2";
+
+package isg_ai;
+
+// instructions on creation and compiling protobuf
+// https://developers.google.com/protocol-buffers/docs/pythontutorial
+// compile with "protoc -I=./ --python_out=./ ./isg_ai.proto"
+
+message ImageMaskPair {
+  optional int32 channels = 1;
+  optional int32 img_height = 2;
+  optional int32 img_width = 3;
+
+  optional string img_type = 4;
+  optional string mask_type = 5;
+
+  // the actual image data, in bytes
+  optional bytes image = 6;
+
+  // the actual mask data, in bytes
+  optional bytes mask = 7;
+  // list of labels present in the mask
+  optional bytes labels = 8;
+}
+
+message ImageBoxesPair {
+  optional int32 channels = 1;
+  optional int32 img_height = 2;
+  optional int32 img_width = 3;
+  // the actual image data, in bytes
+  optional bytes image = 4;
+
+  optional int32 box_count = 5;
+  // the actual mask data, in bytes
+  optional bytes boxes = 6;
+  // boxes are [x,y,width, height]
+
+  optional int32 label = 7;
+
+  optional string img_type = 8;
+  optional string box_type = 9;
+}
+
+
+message ImageNumberPair {
+  optional int32 channels = 1;
+  optional int32 img_height = 2;
+  optional int32 img_width = 3;
+  // the actual image data, in bytes
+  optional bytes image = 4;
+
+  optional bytes number = 5;
+
+  optional string img_type = 6;
+  optional string num_type = 7;
+}
+
+
+message ImageYoloBoxesPair {
+  optional int32 channels = 1;
+  optional int32 img_height = 2;
+  optional int32 img_width = 3;
+  // the actual image data, in bytes
+  optional bytes image = 4;
+
+  optional int32 box_count = 5;
+  // the actual mask data, in bytes
+  optional bytes boxes = 6;
+  // boxes are [x, y, width, height, class-id]
+
+  optional string img_type = 7;
+  optional string box_type = 8;
+}
