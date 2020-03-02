@@ -30,7 +30,8 @@ The input folder of images and masks needs to be split into train and test. Trai
 ```
 python build_lmdb.py -h
 usage: build_lmdb [-h] [--image_folder IMAGE_FOLDER]
-                  [--output_filepath OUTPUT_FILEPATH]
+                  [--csv_filepath CSV_FILEPATH]
+		  [--output_filepath OUTPUT_FILEPATH]
                   [--dataset_name DATASET_NAME]
                   [--train_fraction TRAIN_FRACTION]
 
@@ -41,6 +42,8 @@ optional arguments:
   -h, --help            show this help message and exit
   --image_folder IMAGE_FOLDER
                         filepath to the folder containing the images
+  --csv_filepath CSV_FILEPATH
+                        filepath to the file containing the ground truth labels
   --output_filepath OUTPUT_FILEPATH
                         filepath to the folder where the outputs will be
                         placed
