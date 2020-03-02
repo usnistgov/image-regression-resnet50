@@ -35,61 +35,59 @@ def _inference(img, model):
     # convert CHW to NCHW
     batch_data = batch_data.reshape((1, batch_data.shape[0], batch_data.shape[1], batch_data.shape[2]))
 
-    pred = model(batch_data)
-    pred = np.squeeze(pred)
+    softmax = model(batch_data) # model output defined in model is softmax
+    softmax = np.squeeze(softmax)
+    pred = np.squeeze(np.argmax(softmax, axis=-1).astype(np.int32))
     return pred
 
 
-def inference(saved_model_filepath, image_folder, output_folder, image_format):
-    # create output filepath
-    # if not os.path.exists(output_folder):
-    #     os.mkdir(output_folder)
+def inference(saved_model_filepath, image_folder, output_filepath, image_format):
 
     img_filepath_list = [os.path.join(image_folder, fn) for fn in os.listdir(image_folder) if fn.endswith('.{}'.format(image_format))]
 
     model = tf.saved_model.load(saved_model_filepath)
 
-    print('Starting inference of file list')
-    for i in range(len(img_filepath_list)):
-        img_filepath = img_filepath_list[i]
-        _, slide_name = os.path.split(img_filepath)
-        print('{}/{} : {}'.format(i, len(img_filepath_list), slide_name))
+    with open(output_filepath, 'w') as fh:
+        print('Starting inference of file list')
+        for i in range(len(img_filepath_list)):
+            img_filepath = img_filepath_list[i]
+            _, img_name = os.path.split(img_filepath)
+            print('{}/{} : {}'.format(i, len(img_filepath_list), img_name))
 
-        # print('Loading image: {}'.format(img_filepath))
-        img = imagereader.imread(img_filepath)
-        img = img.astype(np.float32)
+            img = imagereader.imread(img_filepath)
+            img = img.astype(np.float32)
 
-        # normalize with whole image stats
-        img = imagereader.zscore_normalize(img)
-        # print('  img.shape={}'.format(img.shape))
+            # normalize with whole image stats
+            img = imagereader.zscore_normalize(img)
 
-        pred = _inference(img, model)
-        print('  Pred: {} '.format(pred))
+            pred = _inference(img, model)
+            fh.write('{}, {}\n'.format(img_name, float(pred)))
+            print('  Class: {} '.format(pred))
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='inference',
-                                     description='Script to detect stars with the selected resnet50 classification model')
+                                     description='Script to inference the selected resnet50 regression model')
 
     parser.add_argument('--saved_model_filepath', dest='saved_model_filepath', type=str,
                         help='SavedModel filepath to the  model to use', required=True)
     parser.add_argument('--image_folder', dest='image_folder', type=str,
                         help='filepath to the folder containing tif images to inference (Required)', required=True)
-    parser.add_argument('--output_folder', dest='output_folder', type=str, required=True)
+    parser.add_argument('--output_filepath', dest='output_filepath', type=str, required=True)
     parser.add_argument('--image_format', dest='image_format', type=str, help='format (extension) of the input images. E.g {tif, jpg, png)', default='tif')
 
     args = parser.parse_args()
 
     saved_model_filepath = args.saved_model_filepath
     image_folder = args.image_folder
-    output_folder = args.output_folder
+    output_filepath = args.output_filepath
     image_format = args.image_format
 
     print('Arguments:')
     print('saved_model_filepath = {}'.format(saved_model_filepath))
     print('image_folder = {}'.format(image_folder))
-    print('output_folder = {}'.format(output_folder))
+    print('output_filepath = {}'.format(output_filepath))
     print('image_format = {}'.format(image_format))
 
-    inference(saved_model_filepath, image_folder, output_folder, image_format)
+    inference(saved_model_filepath, image_folder, output_filepath, image_format)
 

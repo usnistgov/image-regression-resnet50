@@ -40,7 +40,11 @@ def write_img_to_db(txn, img, number, key_str):
         img = img.reshape((img.shape[0], img.shape[1], 1))
 
     datum = ImageNumberPair()
-    datum.channels = 1
+    if len(img.shape) == 3:
+        # if color, record the number of channels
+        datum.channels = img.shape[2]
+    else:
+        datum.channels = 1
     datum.img_height = img.shape[0]
     datum.img_width = img.shape[1]
     datum.image = img.tobytes()
@@ -73,9 +77,10 @@ def generate_database(img_list, database_name, image_filepath, csv_filepath, out
         for row in reader:
             ground_truth[row[0]] = float(row[1].strip())
 
+    txn_nb = 0
     for i in range(len(img_list)):
         print('  {}/{}'.format(i, len(img_list)))
-        txn_nb = 0
+
         img_file_name = img_list[i]
         block_key, _ = os.path.splitext(img_file_name)
 
@@ -92,6 +97,35 @@ def generate_database(img_list, database_name, image_filepath, csv_filepath, out
 
     image_txn.commit()
     image_env.close()
+
+
+def main(image_folder, csv_filepath, output_folder, dataset_name, train_fraction, image_format):
+    if image_format.startswith('.'):
+        # remove leading period
+        image_format = image_format[1:]
+
+    image_folder = os.path.abspath(image_folder)
+    output_folder = os.path.abspath(output_folder)
+
+    if not os.path.exists(output_folder):
+        os.mkdir(output_folder)
+    # find the image files for which annotations exist
+    img_files = [f for f in os.listdir(image_folder) if f.endswith(image_format)]
+
+    # in place shuffle
+    random.shuffle(img_files)
+
+    idx = int(train_fraction * len(img_files))
+    train_img_files = img_files[0:idx]
+    test_img_files = img_files[idx:]
+
+    print('building train database')
+    database_name = 'train-{}.lmdb'.format(dataset_name)
+    generate_database(train_img_files, database_name, image_folder, csv_filepath, output_folder)
+
+    print('building test database')
+    database_name = 'test-{}.lmdb'.format(dataset_name)
+    generate_database(test_img_files, database_name, image_folder, csv_filepath, output_folder)
 
 
 if __name__ == "__main__":
@@ -119,34 +153,9 @@ if __name__ == "__main__":
     train_fraction = args.train_fraction
     image_format = args.image_format
 
-    # ****************************************************
+    main(image_folder, csv_filepath, output_folder, dataset_name, train_fraction, image_format)
 
-    if image_format.startswith('.'):
-        # remove leading period
-        image_format = image_format[1:]
 
-    image_folder = os.path.abspath(image_folder)
-    output_folder = os.path.abspath(output_folder)
-
-    if not os.path.exists(output_folder):
-        os.mkdir(output_folder)
-    # find the image files for which annotations exist
-    img_files = [f for f in os.listdir(image_folder) if f.endswith(image_format)]
-
-    # in place shuffle
-    random.shuffle(img_files)
-
-    idx = int(train_fraction * len(img_files))
-    train_img_files = img_files[0:idx]
-    test_img_files = img_files[idx:]
-
-    print('building train database')
-    database_name = 'train-{}.lmdb'.format(dataset_name)
-    generate_database(train_img_files, database_name, image_folder, csv_filepath, output_folder)
-
-    print('building test database')
-    database_name = 'test-{}.lmdb'.format(dataset_name)
-    generate_database(test_img_files, database_name, image_folder, csv_filepath, output_folder)
 
 
 

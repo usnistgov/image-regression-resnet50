@@ -11,6 +11,7 @@ tf_version = tf.__version__.split('.')
 if int(tf_version[0]) != 2:
     raise RuntimeError('Tensorflow 2.x.x required')
 
+
 class ResNet50():
     _L2_WEIGHT_DECAY = 1e-4
 
@@ -153,46 +154,30 @@ class ResNet50():
             kernel_initializer='he_normal',
             kernel_regularizer=ResNet50._gen_l2_regularizer(self.use_l2_regularizer),
             data_format='channels_first')(self.inputs)
-        x = tf.keras.layers.BatchNormalization(
-            axis=1)(x)
+        x = tf.keras.layers.BatchNormalization(axis=1)(x)
         x = tf.keras.layers.Activation('relu')(x)
 
         x = tf.keras.layers.MaxPooling2D((3, 3), strides=(2, 2), padding='same')(x)
 
         x = ResNet50._conv_block(x, [64, 64, 256], stride=1, use_l2_regularizer=self.use_l2_regularizer)
-        x = ResNet50._identity_block(x, [64, 64, 256],
-                                 use_l2_regularizer=self.use_l2_regularizer)
-        x = ResNet50._identity_block(x, [64, 64, 256],
-                                 use_l2_regularizer=self.use_l2_regularizer)
+        x = ResNet50._identity_block(x, [64, 64, 256], use_l2_regularizer=self.use_l2_regularizer)
+        x = ResNet50._identity_block(x, [64, 64, 256], use_l2_regularizer=self.use_l2_regularizer)
 
-        x = ResNet50._conv_block(x, [128, 128, 512], stride=2,
-                                 use_l2_regularizer=self.use_l2_regularizer)
-        x = ResNet50._identity_block(x, [128, 128, 512],
-                                     use_l2_regularizer=self.use_l2_regularizer)
-        x = ResNet50._identity_block(x, [128, 128, 512],
-                                     use_l2_regularizer=self.use_l2_regularizer)
-        x = ResNet50._identity_block(x, [128, 128, 512],
-                                     use_l2_regularizer=self.use_l2_regularizer)
+        x = ResNet50._conv_block(x, [128, 128, 512], stride=2, use_l2_regularizer=self.use_l2_regularizer)
+        x = ResNet50._identity_block(x, [128, 128, 512], use_l2_regularizer=self.use_l2_regularizer)
+        x = ResNet50._identity_block(x, [128, 128, 512], use_l2_regularizer=self.use_l2_regularizer)
+        x = ResNet50._identity_block(x, [128, 128, 512], use_l2_regularizer=self.use_l2_regularizer)
 
-        x = ResNet50._conv_block(x, [256, 256, 1024], stride=2,
-                                 use_l2_regularizer=self.use_l2_regularizer)
-        x = ResNet50._identity_block(x, [256, 256, 1024],
-                                     use_l2_regularizer=self.use_l2_regularizer)
-        x = ResNet50._identity_block(x, [256, 256, 1024],
-                                     use_l2_regularizer=self.use_l2_regularizer)
-        x = ResNet50._identity_block(x, [256, 256, 1024],
-                                     use_l2_regularizer=self.use_l2_regularizer)
-        x = ResNet50._identity_block(x, [256, 256, 1024],
-                                     use_l2_regularizer=self.use_l2_regularizer)
-        x = ResNet50._identity_block(x, [256, 256, 1024],
-                                     use_l2_regularizer=self.use_l2_regularizer)
+        x = ResNet50._conv_block(x, [256, 256, 1024], stride=2, use_l2_regularizer=self.use_l2_regularizer)
+        x = ResNet50._identity_block(x, [256, 256, 1024], use_l2_regularizer=self.use_l2_regularizer)
+        x = ResNet50._identity_block(x, [256, 256, 1024], use_l2_regularizer=self.use_l2_regularizer)
+        x = ResNet50._identity_block(x, [256, 256, 1024], use_l2_regularizer=self.use_l2_regularizer)
+        x = ResNet50._identity_block(x, [256, 256, 1024], use_l2_regularizer=self.use_l2_regularizer)
+        x = ResNet50._identity_block(x, [256, 256, 1024], use_l2_regularizer=self.use_l2_regularizer)
 
-        x = ResNet50._conv_block(x, [512, 512, 2048], stride=2,
-                                 use_l2_regularizer=self.use_l2_regularizer)
-        x = ResNet50._identity_block(x, [512, 512, 2048],
-                                     use_l2_regularizer=self.use_l2_regularizer)
-        x = ResNet50._identity_block(x, [512, 512, 2048],
-                                     use_l2_regularizer=self.use_l2_regularizer)
+        x = ResNet50._conv_block(x, [512, 512, 2048], stride=2, use_l2_regularizer=self.use_l2_regularizer)
+        x = ResNet50._identity_block(x, [512, 512, 2048], use_l2_regularizer=self.use_l2_regularizer)
+        x = ResNet50._identity_block(x, [512, 512, 2048], use_l2_regularizer=self.use_l2_regularizer)
 
         # output_layer_name5 is tensor with shape <batch_size>, 2048, <img_size>/32, <img_size>/32
         # downsample_factor = 32
