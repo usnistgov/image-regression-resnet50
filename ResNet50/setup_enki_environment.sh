@@ -10,7 +10,6 @@ source /opt/anaconda3/etc/profile.d/conda.sh
 conda create --name tf2 python=3.6 -y
 conda activate tf2
 
-conda install tensorflow2-gpu -y
-conda install tensorboard
+conda install -c https://public.dhe.ibm.com/ibmdl/export/pub/software/server/ibm-ai/conda/ tensorflow2-gpu tensorboard -y
 conda install python-lmdb -y
 conda install scikit-image -y

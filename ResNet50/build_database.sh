@@ -8,7 +8,10 @@
 # ************************************
 # MODIFY THESE OPTIONS
 
+# The images should be in one directory with a flat heirarchy
 image_folder="/path/to/your/image/folder"
+# The csv file is expecting (key, value) pairs where the key is the image file name
+csv_filepath="/path/to/your/csv/file"
 
 output_folder="/path/to/output/directory/where/results/are/saved"
 
@@ -25,4 +28,4 @@ image_format="tif"
 # ************************************
 
 
-python3 build_lmdb.py --image_folder=${image_folder} --output_folder=${output_folder} --dataset_name=${dataset_name} --train_fraction=${train_fraction} --image_format=${image_format}
+python3 build_lmdb.py --image_folder=${image_folder} --csv_filepath=${csv_filepath} --output_folder=${output_folder} --dataset_name=${dataset_name} --train_fraction=${train_fraction} --image_format=${image_format}

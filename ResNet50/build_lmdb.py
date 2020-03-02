@@ -10,6 +10,7 @@ if sys.version_info[0] < 3:
 
 import skimage.io
 import numpy as np
+import csv
 import os
 import skimage
 import skimage.transform
@@ -53,15 +54,25 @@ def write_img_to_db(txn, img, number, key_str):
     return
 
 
-def generate_database(img_list, database_name, image_filepath, output_folder):
+def generate_database(img_list, database_name, image_filepath, csv_filepath, output_folder):
     output_image_lmdb_file = os.path.join(output_folder, database_name)
 
     if os.path.exists(output_image_lmdb_file):
         print('Deleting existing database')
         shutil.rmtree(output_image_lmdb_file)
 
+    if not os.path.exists(csv_filepath):
+        raise RuntimeError('Ground Truth csv filepath missing: "{}"'.format(csv_filepath))
+
     image_env = lmdb.open(output_image_lmdb_file, map_size=int(5e12))
     image_txn = image_env.begin(write=True)
+
+    # load the ground truth csv file into a dict
+    ground_truth = dict()
+    with open(csv_filepath, 'r') as fh:
+        reader = csv.reader(fh, delimiter=',')
+        for row in reader:
+            ground_truth[row[0]] = float(row[1].strip())
 
     for i in range(len(img_list)):
         print('  {}/{}'.format(i, len(img_list)))
@@ -70,8 +81,8 @@ def generate_database(img_list, database_name, image_filepath, output_folder):
         block_key, _ = os.path.splitext(img_file_name)
 
         img = read_image(os.path.join(image_filepath, img_file_name))
-        toks = block_key.split('_')
-        num = int(toks[2]) # TODO modify this to make sure classification targets are correct
+
+        num = ground_truth[img_file_name]
 
         key_str = '{}_:{}'.format(block_key, num)
         txn_nb += 1
@@ -93,6 +104,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='build_lmdb', description='Script which converts folder of images into a pair of lmdb databases for training.')
 
     parser.add_argument('--image_folder', dest='image_folder', type=str, help='filepath to the folder containing the images', default='../data/images/')
+    parser.add_argument('--csv_filepath', dest='csv_filepath', type=str, help='filepath to the folder containing the images', default='../data/ground_truth.csv')
+
     parser.add_argument('--output_folder', dest='output_folder', type=str, help='filepath to the folder where the outputs will be placed', default='../data/')
     parser.add_argument('--dataset_name', dest='dataset_name', type=str, help='name of the dataset to be used in creating the lmdb files', default='mnist')
     parser.add_argument('--train_fraction', dest='train_fraction', type=float,
@@ -102,6 +115,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     image_folder = args.image_folder
+    csv_filepath = args.csv_filepath
     output_folder = args.output_folder
     dataset_name = args.dataset_name
     train_fraction = args.train_fraction
@@ -130,11 +144,11 @@ if __name__ == "__main__":
 
     print('building train database')
     database_name = 'train-{}.lmdb'.format(dataset_name)
-    generate_database(train_img_files, database_name, image_folder, output_folder)
+    generate_database(train_img_files, database_name, image_folder, csv_filepath, output_folder)
 
     print('building test database')
     database_name = 'test-{}.lmdb'.format(dataset_name)
-    generate_database(test_img_files, database_name, image_folder, output_folder)
+    generate_database(test_img_files, database_name, image_folder, csv_filepath, output_folder)
 
 
 
