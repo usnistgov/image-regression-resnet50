@@ -4,7 +4,7 @@
 
 import sys
 if sys.version_info[0] < 3:
-    raise Exception('Python3 required')
+    raise RuntimeError('Python3 Required')
 
 import numpy as np
 import scipy

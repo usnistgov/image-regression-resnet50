@@ -4,12 +4,12 @@
 
 import sys
 if sys.version_info[0] < 3:
-    raise Exception('Python3 required')
+    raise RuntimeError('Python3 Required')
 
 import tensorflow as tf
 tf_version = tf.__version__.split('.')
 if int(tf_version[0]) != 2:
-    raise Exception('Tensorflow 2.x.x required')
+    raise RuntimeError('Tensorflow 2.x.x required')
 
 import multiprocessing
 from multiprocessing import Process

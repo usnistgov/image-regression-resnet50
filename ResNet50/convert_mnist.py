@@ -5,8 +5,7 @@
 
 import sys
 if sys.version_info[0] < 3:
-    print('Python3 required')
-    sys.exit(1)
+    raise RuntimeError('Python3 Required')
 
 import numpy as np
 import skimage.io

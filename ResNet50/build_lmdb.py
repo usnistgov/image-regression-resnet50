@@ -5,8 +5,7 @@
 
 import sys
 if sys.version_info[0] < 3:
-    print('Python3 required')
-    sys.exit(1)
+    raise RuntimeError('Python3 Required')
 
 import skimage.io
 import numpy as np
@@ -81,7 +80,6 @@ def generate_database(img_list, database_name, image_filepath, csv_filepath, out
         block_key, _ = os.path.splitext(img_file_name)
 
         img = read_image(os.path.join(image_filepath, img_file_name))
-
         num = ground_truth[img_file_name]
 
         key_str = '{}_:{}'.format(block_key, num)
