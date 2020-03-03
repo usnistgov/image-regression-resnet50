@@ -136,7 +136,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='build_lmdb', description='Script which converts folder of images into a pair of lmdb databases for training.')
 
     parser.add_argument('--image_folder', dest='image_folder', type=str, help='filepath to the folder containing the images', default='../data/images/')
-    parser.add_argument('--csv_filepath', dest='csv_filepath', type=str, help='filepath to the file containing the ground truth labels', default='../data/ground_truth.csv')
+    parser.add_argument('--csv_filepath', dest='csv_filepath', type=str, help='filepath to the file containing the ground truth labels. Csv file SHOULD NOT HAVE HEADERS!', default='../data/ground_truth.csv')
 
     parser.add_argument('--output_folder', dest='output_folder', type=str, help='filepath to the folder where the outputs will be placed', default='../data/')
     parser.add_argument('--dataset_name', dest='dataset_name', type=str, help='name of the dataset to be used in creating the lmdb files', default='mnist')
