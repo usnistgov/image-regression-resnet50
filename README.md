@@ -43,7 +43,7 @@ optional arguments:
   --image_folder IMAGE_FOLDER
                         filepath to the folder containing the images
   --csv_filepath CSV_FILEPATH
-                        filepath to the file containing the ground truth labels
+                        filepath to the file containing the ground truth labels. Csv file SHOULD NOT HAVE HEADERS!
   --output_filepath OUTPUT_FILEPATH
                         filepath to the folder where the outputs will be
                         placed
