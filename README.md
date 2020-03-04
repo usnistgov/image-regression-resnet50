@@ -89,8 +89,6 @@ However, on other systems this might not be the case:
 2019-02-27 13:45:05.405315: I tensorflow/core/common_runtime/gpu/gpu_device.cc:971] 3:   N N Y N 
 ```
 
-If the fully connected GPU topology exists, perform gradient averaging on one of the GPUs (`gpu:0` by default). Otherwise, it is faster to transfer the gradient information to the CPU and perform the gradient averaging on `cpu:0`. The training script controls where the gradient averaging happens with the option: `gradient_update_location`.
-
 The full help for the training script is:
 
 
