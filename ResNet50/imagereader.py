@@ -219,6 +219,8 @@ class ImageReader:
                 I = np.fromstring(datum.image, dtype=datum.img_type)
                 # reshape the numpy array using the dimensions recorded in the datum
                 I = I.reshape((datum.img_height, datum.img_width, datum.channels))
+                if I.shape != self.image_size:
+                    raise RuntimeError("Encountered unexpected image shape from database. Expected {}. Found {}.".format(self.image_size, I.shape))
 
                 number = np.fromstring(datum.number, dtype=datum.num_type).reshape(-1)
 
