@@ -17,7 +17,7 @@ input_data_directory="/path/to/your/images"
 output_filepath="/path/to/your/results.csv"
 
 # which model checkpoint to use for inferencing
-checkpoint_filepath="/path/to/your/model/checkpoint/model.ckpt"
+saved_model_filepath="/path/to/your/model/saved_model/"
 
 image_format='tif'
 
@@ -31,4 +31,4 @@ image_format='tif'
 export CUDA_DEVICE_ORDER="PCI_BUS_ID"
 export CUDA_VISIBLE_DEVICES=${GPU}
 
-python3 inference.py --checkpoint_filepath=${checkpoint_filepath} --image_folder=${input_data_directory} --output_filepath=${output_filepath} --image_format=${image_format}
+python3 inference.py --saved_model_filepath=${saved_model_filepath} --image_folder=${input_data_directory} --output_filepath=${output_filepath} --image_format=${image_format}
