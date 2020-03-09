@@ -20,7 +20,7 @@ if int(tf_version[0]) != 2:
     raise RuntimeError('Tensorflow 2.x.x required')
 from tensorflow.keras.mixed_precision import experimental as mixed_precision
 
-import resnet50
+import model
 import imagereader
 import time
 
@@ -66,7 +66,7 @@ def train_model(output_folder, batch_size, reader_count, train_lmdb_filepath, te
             test_dataset = mirrored_strategy.experimental_distribute_dataset(test_dataset)
 
             print('Creating model')
-            model = resnet50.ResNet50(global_batch_size, train_reader.get_image_size(), learning_rate)
+            model = model.ResNet50(global_batch_size, train_reader.get_image_size(), learning_rate)
 
             checkpoint = tf.train.Checkpoint(optimizer=model.get_optimizer(), model=model.get_keras_model())
 
@@ -174,7 +174,7 @@ def train_model(output_folder, batch_size, reader_count, train_lmdb_filepath, te
     # convert training checkpoint to the saved model format
     if training_checkpoint_filepath is not None:
         # restore the checkpoint and generate a saved model
-        model = resnet50.ResNet50(global_batch_size, train_reader.get_image_size(), learning_rate)
+        model = model.ResNet50(global_batch_size, train_reader.get_image_size(), learning_rate)
         checkpoint = tf.train.Checkpoint(optimizer=model.get_optimizer(), model=model.get_keras_model())
         checkpoint.restore(training_checkpoint_filepath)
         tf.saved_model.save(model.get_keras_model(), os.path.join(output_folder, 'saved_model'))
