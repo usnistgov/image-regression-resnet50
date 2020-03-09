@@ -77,7 +77,7 @@ cp -r . "$results_dir/src"
 # launch training script with required options
 echo "Launching Training Script"
 
-python train_resnet50.py --test_every_n_steps=${test_every_n_steps} --batch_size=${batch_size} --train_database="$scratch_dir/$train_lmdb_file" --test_database="$scratch_dir/$test_lmdb_file" --output_dir="$results_dir" --learning_rate=${learning_rate}  --use_augmentation=${use_augmentation} | tee "$results_dir/log.txt"
+python train.py --test_every_n_steps=${test_every_n_steps} --batch_size=${batch_size} --train_database="$scratch_dir/$train_lmdb_file" --test_database="$scratch_dir/$test_lmdb_file" --output_dir="$results_dir" --learning_rate=${learning_rate}  --use_augmentation=${use_augmentation} | tee "$results_dir/log.txt"
 
 # cleanup scratch dir
 rm -rf ${scratch_dir}/*

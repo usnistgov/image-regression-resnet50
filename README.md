@@ -93,8 +93,8 @@ The full help for the training script is:
 
 
 ```
-python train_resnet50.py -h
-usage: train_resnet50 [-h] --train_database TRAIN_DATABASE_FILEPATH
+python train.py -h
+usage: train [-h] --train_database TRAIN_DATABASE_FILEPATH
                       --test_database TEST_DATABASE_FILEPATH --output_dir
                       OUTPUT_FOLDER [--batch_size BATCH_SIZE]
                       [--learning_rate LEARNING_RATE]
