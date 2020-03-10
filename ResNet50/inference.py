@@ -62,7 +62,7 @@ def inference(saved_model_filepath, image_folder, output_filepath, image_format)
 
             pred = _inference(img, model)
             fh.write('{}, {}\n'.format(img_name, float(pred)))
-            print('  Class: {} '.format(pred))
+            print('  Regression Value: {} '.format(pred))
 
 
 if __name__ == "__main__":
