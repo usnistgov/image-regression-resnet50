@@ -66,9 +66,9 @@ def train_model(output_folder, batch_size, reader_count, train_lmdb_filepath, te
             test_dataset = mirrored_strategy.experimental_distribute_dataset(test_dataset)
 
             print('Creating model')
-            model = model.ResNet50(global_batch_size, train_reader.get_image_size(), learning_rate)
+            renset = model.ResNet50(global_batch_size, train_reader.get_image_size(), learning_rate)
 
-            checkpoint = tf.train.Checkpoint(optimizer=model.get_optimizer(), model=model.get_keras_model())
+            checkpoint = tf.train.Checkpoint(optimizer=renset.get_optimizer(), model=renset.get_keras_model())
 
             # train_epoch_size = train_reader.get_image_count()/batch_size
             train_epoch_size = test_every_n_steps
@@ -99,10 +99,10 @@ def train_model(output_folder, batch_size, reader_count, train_lmdb_filepath, te
                 if epoch == 0:
                     cur_train_epoch_size = min(1000, train_epoch_size)
                     print('Performing Adam Optimizer learning rate warmup for {} steps'.format(cur_train_epoch_size))
-                    model.set_learning_rate(learning_rate / 10)
+                    renset.set_learning_rate(learning_rate / 10)
                 else:
                     cur_train_epoch_size = train_epoch_size
-                    model.set_learning_rate(learning_rate)
+                    renset.set_learning_rate(learning_rate)
 
                 # Iterate over the batches of the train dataset.
                 start_time = time.time()
@@ -111,7 +111,7 @@ def train_model(output_folder, batch_size, reader_count, train_lmdb_filepath, te
                         break
 
                     inputs = (batch_images, batch_labels, train_loss_metric)
-                    model.dist_train_step(mirrored_strategy, inputs)
+                    renset.dist_train_step(mirrored_strategy, inputs)
 
                     print('Train Epoch {}: Batch {}/{}: Loss {}'.format(epoch, step, train_epoch_size, train_loss_metric.result()))
                     with train_summary_writer.as_default():
@@ -125,7 +125,7 @@ def train_model(output_folder, batch_size, reader_count, train_lmdb_filepath, te
                         break
 
                     inputs = (batch_images, batch_labels, test_loss_metric)
-                    loss_value = model.dist_test_step(mirrored_strategy, inputs)
+                    loss_value = renset.dist_test_step(mirrored_strategy, inputs)
 
                     epoch_test_loss.append(loss_value.numpy())
                     # print('Test Epoch {}: Batch {}/{}: Loss {}'.format(epoch, step, test_epoch_size, loss_value))
@@ -174,10 +174,10 @@ def train_model(output_folder, batch_size, reader_count, train_lmdb_filepath, te
     # convert training checkpoint to the saved model format
     if training_checkpoint_filepath is not None:
         # restore the checkpoint and generate a saved model
-        model = model.ResNet50(global_batch_size, train_reader.get_image_size(), learning_rate)
-        checkpoint = tf.train.Checkpoint(optimizer=model.get_optimizer(), model=model.get_keras_model())
+        renset = model.ResNet50(global_batch_size, train_reader.get_image_size(), learning_rate)
+        checkpoint = tf.train.Checkpoint(optimizer=renset.get_optimizer(), model=renset.get_keras_model())
         checkpoint.restore(training_checkpoint_filepath)
-        tf.saved_model.save(model.get_keras_model(), os.path.join(output_folder, 'saved_model'))
+        tf.saved_model.save(renset.get_keras_model(), os.path.join(output_folder, 'saved_model'))
 
 
 def main():
