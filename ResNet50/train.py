@@ -33,9 +33,9 @@ def train_model(output_folder, batch_size, reader_count, train_lmdb_filepath, te
 
     training_checkpoint_filepath = None
 
-    # setup mixed precision training to use FP16
-    policy = mixed_precision.Policy('mixed_float16')
-    mixed_precision.set_policy(policy)
+    # # setup mixed precision training to use FP16
+    # policy = mixed_precision.Policy('mixed_float16')
+    # mixed_precision.set_policy(policy)
 
     # uses all available devices
     mirrored_strategy = tf.distribute.MirroredStrategy()
