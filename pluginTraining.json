@@ -1,0 +1,169 @@
+{
+  "name": "WIPP Resnet50 Regression Plugin",
+  "version": "1.0.0",
+  "title": "Resnet50 Regression",
+  "author": "Michael Majurski",
+  "institution": "National Institute of Standards and Technology",
+  "repository": "https://github.com/usnistgov/image-regression-resnet50",
+  "citation": "\"Residual Learning for Image Recognition.\", Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian SunDeep, 10 Dec 2015. arXiv:1512.03385v1",
+  "description": "Resnet50 Regression",
+  "containerId": "wipp/wipp-resnet50-regression-train-plugin:1.0.0",
+  "inputs": [
+
+    {
+      "name": "image_folder",
+      "type": "collection",
+      "options": {
+        "format": "tiledtiff"
+      },
+      "description": "filepath to the folder containing the images.",
+      "required": true
+    },
+    {
+      "name": "csv_filepath",
+      "type": "csvCollection",
+      "description": "CSV collection of the file containing the ground truth labels.",
+      "required": true
+    },
+    {
+      "name": "csv_name",
+      "type": "string",
+      "description": "name to the file containing the ground truth labels. Csv file SHOULD NOT HAVE HEADERS!",
+      "required": true
+    },
+    {
+      "name": "batch_size",
+      "type": "number",
+      "description": "How many images/tiles to use per mini-batch. The number of images used to estimate the gradient per training step.",
+      "required": true,
+      "default": 4
+    },
+    {
+      "name": "learning_rate",
+      "type": "number",
+      "description": "What is the learning rate for the network?",
+      "required": true,
+      "default": 3e-4
+    },
+    {
+      "name": "test_every_n_steps",
+      "type": "number",
+      "description": "This controls how big the effective epoch is. It enables controlling the test frequency between experiments with different true epoch sizes.",
+      "required": true,
+      "default": 1000
+    },
+    {
+      "name": "use_augmentation",
+      "type": "enum",
+			"options": {
+				"values": [
+					1,0
+				]
+			},
+      "description": "Whether or not to use data augmentation during training.",
+      "required": true,
+      "default": 1
+    },
+       {
+      "name": "early_stopping",
+      "type": "number",
+      "description": "Perform early stopping when the test loss does not improve for N epochs.",
+      "required": true,
+      "default": 10
+    },
+       {
+      "name": "reader_count",
+      "type": "number",
+      "description": "how many threads to use for disk I/O and augmentation per gpu.",
+      "required": true,
+      "default": 1
+    }    
+  ],
+  "outputs": [
+    {
+      "name": "output_dir",
+      "type": "tensorflowModel",
+      "description": "Output data for the plugin"
+    },
+    {
+      "name": "tensorboard_folder",
+      "type": "tensorboardLogs",
+      "description": "tensorboard Logs data for the plugin"
+    }
+  ],
+  "ui": [
+    {
+      "key": "inputs.image_folder",
+      "title": "Image Collection: ",
+      "description": "Pick a collection..."
+    },
+    {
+      "key": "inputs.csv_filepath",
+      "title": "CSV Collection: ",
+      "description": "Pick a collection..."
+    },
+    {
+      "key": "inputs.csv_name",
+      "title": "CSV File: ",
+      "description": "Write the CSV file name."
+    },
+    {
+      "key": "inputs.learning_rate",
+      "title": "Learning Rate: "
+    },
+    {
+      "key": "inputs.batch_size",
+      "title": "Batch Size: ",
+      "description": "How many images/tiles to use per mini-batch?"
+    },
+    {
+      "key": "inputs.test_every_n_steps",
+      "title": "Test Every N Steps: ",
+      "description": "How many gradient update (training) steps to take between test split evaluations."
+    },
+    {
+      "key": "inputs.use_augmentation",
+      "title": "Use Data Augmentation: ",
+      "description": "0: NO; 1: YES"
+    },
+    {
+      "key": "inputs.early_stopping",
+      "title": "Early Stopping Value: ",
+      "description": "Stopping when the test loss does not improve for ... epochs"
+    },
+    {
+      "key": "inputs.reader_count",
+      "title": "Reader Count: ",
+      "description": "How many threads to use for disk I/O and augmentation per gpu."
+    },
+    {
+            "key" : "fieldsets",
+            "fieldsets": [
+                {
+                  "title": "-- Input images --",
+                  "fields": [
+                    "image_folder",
+                    "csv_filepath",
+                    "csv_name"
+                  ]
+                },
+                {
+                  "title": "-- Training Configuration --",
+                  "fields": [
+                    "batch_size",
+                    "learning_rate",
+                    "test_every_n_steps",
+                    "early_stopping",
+                    "reader_count"
+                  ]
+                },
+                {
+                  "title": "-- Augmentation Configuration --",
+                  "fields": [
+                    "use_augmentation"
+                  ]
+                }
+            ]
+        }
+  ]
+}

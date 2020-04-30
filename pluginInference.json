@@ -1,0 +1,47 @@
+{
+  "name": "WIPP Resnet50 Regression Inference Plugin",
+  "version": "1.0.0",
+  "title": "Resnet50 Regression Inference",
+  "author": "Michael Majurski",
+  "institution": "National Institute of Standards and Technology",
+  "repository": "https://github.com/usnistgov/image-regression-resnet50",
+  "citation": "\"Residual Learning for Image Recognition.\", Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian SunDeep, 10 Dec 2015. arXiv:1512.03385v1",
+  "description": "Inference with a Resnet50 regression model",
+  "containerId": "wipp/wipp-resnet50-regression-inference-plugin:1.0.0",
+  "inputs": [
+    {
+      "name": "image_folder",
+      "type": "collection",
+      "options": {
+        "format": "tiledtiff"
+      },
+      "description": "Input images to be inferenced using the plugin.",
+      "required": true
+    },
+    {
+      "name": "saved_model_filepath",
+      "type": "tensorflowModel",
+      "description": "Model to use for inferencing",
+      "required": true
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output_filepath",
+      "type": "csvCollection",
+      "description": "Output prediction for the plugin"
+    }
+  ],
+  "ui": [
+    {
+      "key": "inputs.image_folder",
+      "title": "Image Collection: ",
+      "description": "Pick a collection..."
+    },
+    {
+      "key": "inputs.saved_model_filepath",
+      "title": "Trained AI Model: ",
+      "description": "Pick a model..."
+    }
+  ]
+}
