@@ -37,9 +37,8 @@ def _inference(img, model):
     # convert CHW to NCHW
     batch_data = batch_data.reshape((1, batch_data.shape[0], batch_data.shape[1], batch_data.shape[2]))
 
-    softmax = model(batch_data) # model output defined in model is softmax
-    softmax = np.squeeze(softmax)
-    pred = np.squeeze(np.argmax(softmax, axis=-1).astype(np.int32))
+    pred = model(batch_data) # model output defined in model is softmax
+    pred = np.squeeze(pred)
     return pred
 
 
