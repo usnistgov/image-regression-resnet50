@@ -120,7 +120,6 @@ def train_model(output_folder, tensorboard_folder, batch_size, reader_count, tra
                     print('Train Epoch {}: Batch {}/{}: Loss {}'.format(epoch, step, train_epoch_size, train_loss_metric.result()))
                     with train_summary_writer.as_default():
                         tf.summary.scalar('loss', train_loss_metric.result(), step=int(epoch * train_epoch_size + step))
-                        tf.summary.scalar('accuracy', 1-train_loss_metric.result(), step=int(epoch * train_epoch_size + step))
                     train_loss_metric.reset_states()
 
                 # Iterate over the batches of the test dataset.
@@ -139,7 +138,6 @@ def train_model(output_folder, tensorboard_folder, batch_size, reader_count, tra
                 print('Test Epoch: {}: Loss = {}'.format(epoch, test_loss_metric.result()))
                 with test_summary_writer.as_default():
                     tf.summary.scalar('loss', test_loss_metric.result(), step=int((epoch+1) * train_epoch_size))
-                    tf.summary.scalar('accuracy', 1-test_loss_metric.result(), step=int((epoch+1) * train_epoch_size))
                 test_loss_metric.reset_states()
 
                 with open(os.path.join(output_folder, 'test_loss.csv'), 'w') as csvfile:

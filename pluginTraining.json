@@ -1,13 +1,13 @@
 {
   "name": "WIPP Resnet50 Regression Plugin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "title": "Resnet50 Regression",
   "author": "Michael Majurski",
   "institution": "National Institute of Standards and Technology",
   "repository": "https://github.com/usnistgov/image-regression-resnet50",
   "citation": "\"Residual Learning for Image Recognition.\", Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian SunDeep, 10 Dec 2015. arXiv:1512.03385v1",
   "description": "Resnet50 Regression",
-  "containerId": "wipp/wipp-resnet50-regression-train-plugin:1.0.0",
+  "containerId": "wipp/wipp-resnet50-regression-train-plugin:1.0.1",
   "inputs": [
 
     {
@@ -34,21 +34,21 @@
     {
       "name": "batch_size",
       "type": "number",
-      "description": "How many images/tiles to use per mini-batch. The number of images used to estimate the gradient per training step.",
+      "description": "How many images/tiles to use per mini-batch. The number of images used to estimate the gradient per training step. [default: 4]",
       "required": true,
       "default": 4
     },
     {
       "name": "learning_rate",
       "type": "number",
-      "description": "What is the learning rate for the network?",
+      "description": "What is the learning rate for the network? [default: 3e-4]",
       "required": true,
       "default": 3e-4
     },
     {
       "name": "test_every_n_steps",
       "type": "number",
-      "description": "This controls how big the effective epoch is. It enables controlling the test frequency between experiments with different true epoch sizes.",
+      "description": "This controls how big the effective epoch is. It enables controlling the test frequency between experiments with different true epoch sizes. [default: 1000]",
       "required": true,
       "default": 1000
     },
