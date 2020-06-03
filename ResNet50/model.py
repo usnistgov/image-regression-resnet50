@@ -127,9 +127,10 @@ class ResNet50():
         x = tf.keras.layers.Activation('relu')(x)
         return x
 
-    def __init__(self, global_batch_size, img_size, learning_rate=3e-4, use_l2_regularizer=True):
+    def __init__(self, global_batch_size, img_size, number_regression_targets, learning_rate=3e-4, use_l2_regularizer=True):
 
         self.img_size = img_size
+        self.number_regression_targets = number_regression_targets
         self.learning_rate = learning_rate
         self.global_batch_size = global_batch_size
         self.use_l2_regularizer = use_l2_regularizer
@@ -187,7 +188,7 @@ class ResNet50():
         x = tf.keras.layers.Lambda(lambda x: tf.keras.backend.mean(x, rm_axes), name='reduce_mean')(x)
 
         logits = tf.keras.layers.Dense(
-            1,
+            self.number_regression_targets,
             kernel_initializer='he_normal',
             kernel_regularizer=ResNet50._gen_l2_regularizer(self.use_l2_regularizer),
             bias_regularizer=ResNet50._gen_l2_regularizer(self.use_l2_regularizer),
