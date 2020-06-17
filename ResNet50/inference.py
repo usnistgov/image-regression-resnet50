@@ -63,7 +63,7 @@ def inference(saved_model_filepath, image_folder, output_filepath, image_format)
 
             pred = _inference(img, model)
             fh.write('{}'.format(img_name))
-            for j in range(len(pred)):
+            for j in range(pred.size):
                 fh.write(', {}'.format(float(pred[j])))
             fh.write('\n')
             print('  Regression Value(s): {} '.format(pred))
