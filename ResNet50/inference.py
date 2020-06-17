@@ -39,6 +39,7 @@ def _inference(img, model):
 
     pred = model(batch_data) # model output defined in model is softmax
     pred = np.squeeze(pred)
+    pred = np.atleast_1d(pred)  # ensure pred is a vector, and not a np scalar
     return pred
 
 
@@ -63,7 +64,7 @@ def inference(saved_model_filepath, image_folder, output_filepath, image_format)
 
             pred = _inference(img, model)
             fh.write('{}'.format(img_name))
-            for j in range(pred.size):
+            for j in range(len(pred)):
                 fh.write(', {}'.format(float(pred[j])))
             fh.write('\n')
             print('  Regression Value(s): {} '.format(pred))
