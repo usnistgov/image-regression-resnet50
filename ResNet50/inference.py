@@ -39,6 +39,7 @@ def _inference(img, model):
 
     pred = model(batch_data) # model output defined in model is softmax
     pred = np.squeeze(pred)
+    pred = np.atleast_1d(pred)  # ensure pred is a vector, and not a np scalar
     return pred
 
 
@@ -62,8 +63,11 @@ def inference(saved_model_filepath, image_folder, output_filepath, image_format)
             img = imagereader.zscore_normalize(img)
 
             pred = _inference(img, model)
-            fh.write('{}, {}\n'.format(img_name, float(pred)))
-            print('  Regression Value: {} '.format(pred))
+            fh.write('{}'.format(img_name))
+            for j in range(len(pred)):
+                fh.write(', {}'.format(float(pred[j])))
+            fh.write('\n')
+            print('  Regression Value(s): {} '.format(pred))
 
 
 if __name__ == "__main__":

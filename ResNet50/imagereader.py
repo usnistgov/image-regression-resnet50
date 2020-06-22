@@ -24,7 +24,7 @@ import augment
 import os
 import skimage.io
 import skimage.transform
-from isg_ai_pb2 import ImageNumberPair
+from isg_ai_pb2 import ImageNumbersPair
 
 
 def zscore_normalize(image_data):
@@ -109,7 +109,7 @@ class ImageReader:
         self.lmdb_env = lmdb.open(self.image_db, map_size=int(2e10), readonly=True)  # 20 GB
         self.lmdb_txns = list()
 
-        datum = ImageNumberPair()  # create a datum for decoding serialized protobuf objects
+        datum = ImageNumbersPair()  # create a datum for decoding serialized protobuf objects
         print('Initializing image database')
 
         with self.lmdb_env.begin(write=False) as lmdb_txn:
@@ -121,6 +121,8 @@ class ImageReader:
             datum.ParseFromString(cursor.value())
             # record the image size
             self.image_size = [datum.img_height, datum.img_width, datum.channels]
+            numbers = np.fromstring(datum.numbers, dtype=datum.num_type).reshape(-1)
+            self.number_of_regression_outputs = numbers.size
 
             cursor = lmdb_txn.cursor().iternext(keys=True, values=False)
             # iterate over the database getting the keys
@@ -128,6 +130,7 @@ class ImageReader:
                 self.keys_flat.append(key)
 
         print('Dataset has {} examples'.format(len(self.keys_flat)))
+        print('Dataset has {} regression targets (outputs from the network)'.format(self.number_of_regression_outputs))
 
     def get_image_count(self):
         # tie epoch size to the number of images
@@ -135,6 +138,9 @@ class ImageReader:
 
     def get_image_size(self):
         return self.image_size
+
+    def get_number_outputs(self):
+        return self.number_of_regression_outputs
 
     def get_image_tensor_shape(self):
         # HWC to CHW
@@ -193,7 +199,7 @@ class ImageReader:
         termimation_flag = False  # flag to control the worker shutdown
         self.key_idx = self.idQ.get()  # setup non-shuffle index to stride across flat keys properly
         try:
-            datum = ImageNumberPair()  # create a datum for decoding serialized objects
+            datum = ImageNumbersPair()  # create a datum for decoding serialized objects
 
             local_lmdb_txn = self.lmdb_txns[self.key_idx]
 
@@ -224,7 +230,10 @@ class ImageReader:
                 if np.any(I.shape != np.asarray(self.image_size)):
                     raise RuntimeError("Encountered unexpected image shape from database. Expected {}. Found {}.".format(self.image_size, I.shape))
 
-                number = np.fromstring(datum.number, dtype=datum.num_type).reshape(-1)
+                numbers = np.fromstring(datum.numbers, dtype=datum.num_type).reshape(-1)
+                if numbers.size != self.number_of_regression_outputs:
+                    raise RuntimeError(
+                        "Encountered unexpected regression target shape from database. Expected {}. Found {}.".format(self.number_of_regression_outputs, numbers.size))
 
                 if self.use_augmentation:
                     I = I.astype(np.float32)
@@ -244,11 +253,11 @@ class ImageReader:
                 I = I.astype(np.float32)
                 I = zscore_normalize(I)
 
-                number = number.astype(np.float32)
+                numbers = numbers.astype(np.float32)
 
                 # add the batch in the output queue
                 # this put block until there is space in the output queue (size 50)
-                self.outQ.put((I, number))
+                self.outQ.put((I, numbers))
 
         except Exception as e:
             print('***************** Reader Error *****************')
@@ -286,7 +295,7 @@ class ImageReader:
         # this sets up the imagereader class as a Python generator
         # Images come in as HWC, and are converted into CHW for network
         image_shape = tf.TensorShape((self.image_size[2], self.image_size[0], self.image_size[1]))
-        label_shape = tf.TensorShape((1))
+        label_shape = tf.TensorShape((self.number_of_regression_outputs))
         return tf.data.Dataset.from_generator(self.generator, output_types=(tf.float32, tf.float32),
                                               output_shapes=(image_shape, label_shape))
 

@@ -16,7 +16,7 @@ import os
 import skimage
 import skimage.transform
 import argparse
-from isg_ai_pb2 import ImageNumberPair
+from isg_ai_pb2 import ImageNumbersPair
 import shutil
 import lmdb
 import random
@@ -27,11 +27,11 @@ def read_image(fp):
     return img
 
 
-def write_img_to_db(txn, img, number, key_str):
+def write_img_to_db(txn, img, numbers, key_str):
     if type(img) is not np.ndarray:
         raise Exception("Img must be numpy array to store into db")
-    if type(number) is not np.ndarray:
-        number = np.asarray(number)
+    if type(numbers) is not np.ndarray:
+        numbers = np.asarray(numbers)
     if len(img.shape) > 3:
         raise Exception("Img must be 2D or 3D [HW, or HWC] format")
     if len(img.shape) < 2:
@@ -41,7 +41,7 @@ def write_img_to_db(txn, img, number, key_str):
         # make a 3D array
         img = img.reshape((img.shape[0], img.shape[1], 1))
 
-    datum = ImageNumberPair()
+    datum = ImageNumbersPair()
     if len(img.shape) == 3:
         # if color, record the number of channels
         datum.channels = img.shape[2]
@@ -50,10 +50,10 @@ def write_img_to_db(txn, img, number, key_str):
     datum.img_height = img.shape[0]
     datum.img_width = img.shape[1]
     datum.image = img.tobytes()
-    datum.number = number.tobytes()
+    datum.numbers = numbers.tobytes()
 
     datum.img_type = img.dtype.str
-    datum.num_type = number.dtype.str
+    datum.num_type = numbers.dtype.str
 
     txn.put(key_str.encode('ascii'), datum.SerializeToString())
     return
@@ -77,7 +77,11 @@ def generate_database(img_list, database_name, image_filepath, csv_filepath, out
     with open(csv_filepath, 'r') as fh:
         reader = csv.reader(fh, delimiter=',')
         for row in reader:
-            ground_truth[row[0]] = float(row[1].strip())
+            vals = list()
+            for i in range(1, len(row)):
+                vals.append(float(row[i].strip()))
+            vals = np.asarray(vals)
+            ground_truth[row[0]] = vals
 
     txn_nb = 0
     for i in range(len(img_list)):
@@ -87,11 +91,11 @@ def generate_database(img_list, database_name, image_filepath, csv_filepath, out
         block_key, _ = os.path.splitext(img_file_name)
 
         img = read_image(os.path.join(image_filepath, img_file_name))
-        num = ground_truth[img_file_name]
+        numbers = ground_truth[img_file_name]
 
-        key_str = '{}_:{}'.format(block_key, num)
+        key_str = '{}:{}'.format(block_key, txn_nb)
         txn_nb += 1
-        write_img_to_db(image_txn, img, num, key_str)
+        write_img_to_db(image_txn, img, numbers, key_str)
 
         if txn_nb % 1000 == 0:
             image_txn.commit()
