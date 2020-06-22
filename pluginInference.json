@@ -1,13 +1,13 @@
 {
   "name": "WIPP Resnet50 Regression Inference Plugin",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "title": "Resnet50 Regression Inference",
   "author": "Michael Majurski",
   "institution": "National Institute of Standards and Technology",
   "repository": "https://github.com/usnistgov/image-regression-resnet50",
   "citation": "\"Residual Learning for Image Recognition.\", Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian SunDeep, 10 Dec 2015. arXiv:1512.03385v1",
   "description": "Inference with a Resnet50 regression model",
-  "containerId": "wipp/wipp-resnet50-regression-inference-plugin:1.0.1",
+  "containerId": "wipp/wipp-resnet50-regression-inference-plugin:2.0.0",
   "inputs": [
     {
       "name": "image_folder",
