@@ -27,7 +27,7 @@ import imagereader
 import time
 
 
-def train_model(output_folder, batch_size, reader_count, train_lmdb_filepath, test_lmdb_filepath, use_augmentation, learning_rate, test_every_n_steps, early_stopping_count):
+def train_model(output_folder, tensorboard_folder, batch_size, reader_count, train_lmdb_filepath, test_lmdb_filepath, use_augmentation, learning_rate, test_every_n_steps, early_stopping_count):
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
@@ -83,10 +83,12 @@ def train_model(output_folder, batch_size, reader_count, train_lmdb_filepath, te
             test_loss_metric = tf.keras.metrics.Mean('test_loss', dtype=tf.float32)
 
             current_time = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")
-            train_log_dir = os.path.join(output_folder, 'tensorboard-' + current_time, 'train')
+            train_log_dir = os.path.join(tensorboard_folder, 'train') if tensorboard_folder \
+                else os.path.join(output_folder, 'tensorboard-' + current_time, 'train')
             if not os.path.exists(train_log_dir):
                 os.makedirs(train_log_dir)
-            test_log_dir = os.path.join(output_folder, 'tensorboard-' + current_time, 'test')
+            test_log_dir = os.path.join(tensorboard_folder, 'test') if tensorboard_folder \
+                else os.path.join(output_folder, 'tensorboard-' + current_time, 'test')
             if not os.path.exists(test_log_dir):
                 os.makedirs(test_log_dir)
 
@@ -179,7 +181,8 @@ def train_model(output_folder, batch_size, reader_count, train_lmdb_filepath, te
         renset = model.ResNet50(global_batch_size, train_reader.get_image_size(), train_reader.get_number_outputs(), learning_rate)
         checkpoint = tf.train.Checkpoint(optimizer=renset.get_optimizer(), model=renset.get_keras_model())
         checkpoint.restore(training_checkpoint_filepath).expect_partial()
-        tf.saved_model.save(renset.get_keras_model(), os.path.join(output_folder, 'saved_model'))
+        # tf.saved_model.save(renset.get_keras_model(), os.path.join(output_folder, 'saved_model'))
+        tf.saved_model.save(renset.get_keras_model(), output_folder)
 
 
 def main():
@@ -189,6 +192,7 @@ def main():
     parser.add_argument('--train_database', dest='train_database_filepath', type=str, help='lmdb database to use for (Required)', required=True)
     parser.add_argument('--test_database', dest='test_database_filepath', type=str, help='lmdb database to use for testing (Required)', required=True)
     parser.add_argument('--output_dir', dest='output_folder', type=str, help='Folder where outputs will be saved (Required)', required=True)
+    parser.add_argument('--tensorboard_folder', dest='tensorboard_folder', type=str, help='Folder where tensorboard logs will be saved (Required)')
 
     parser.add_argument('--batch_size', dest='batch_size', type=int, help='training batch size', default=4)
     parser.add_argument('--learning_rate', dest='learning_rate', type=float, default=3e-4)
@@ -200,6 +204,7 @@ def main():
 
     args = parser.parse_args()
     batch_size = args.batch_size
+    tensorboard_folder = args.tensorboard_folder
     output_folder = args.output_folder
     early_stopping_count = args.early_stopping_count
     train_lmdb_filepath = args.train_database_filepath
@@ -218,11 +223,12 @@ def main():
     print('train_database = {}'.format(train_lmdb_filepath))
     print('test_database = {}'.format(test_lmdb_filepath))
     print('output folder = {}'.format(output_folder))
+    print('tensorboard_folder = {}'.format(tensorboard_folder))
 
     print('early_stopping count = {}'.format(early_stopping_count))
     print('reader_count = {}'.format(reader_count))
 
-    train_model(output_folder, batch_size, reader_count, train_lmdb_filepath, test_lmdb_filepath, use_augmentation, learning_rate, test_every_n_steps, early_stopping_count)
+    train_model(output_folder, tensorboard_folder, batch_size, reader_count, train_lmdb_filepath, test_lmdb_filepath, use_augmentation, learning_rate, test_every_n_steps, early_stopping_count)
 
 
 if __name__ == "__main__":
